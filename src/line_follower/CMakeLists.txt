@@ -24,3 +24,18 @@ if(BUILD_TESTING)
 endif()
 
 ament_package()
+
+# Install launch files
+install(DIRECTORY launch
+  DESTINATION share/${PROJECT_NAME}/
+)
+
+# Install URDF files
+install(DIRECTORY urdf
+  DESTINATION share/${PROJECT_NAME}/
+)
+
+# Install worlds
+install(DIRECTORY worlds
+  DESTINATION share/${PROJECT_NAME}/
+)
