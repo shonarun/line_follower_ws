@@ -1,6 +1,6 @@
 from setuptools import find_packages, setup
 
-package_name = 'robot_description'
+package_name = 'line_follower_controller'
 
 setup(
     name=package_name,
@@ -24,6 +24,7 @@ setup(
     },
     entry_points={
         'console_scripts': [
+            "line_follower_controller = line_follower_controller.motion_planning:main"
         ],
     },
 )
