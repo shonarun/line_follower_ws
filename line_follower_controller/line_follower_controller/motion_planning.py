@@ -74,7 +74,7 @@ class CameraSub(Node):
             error = cx - frame_center
             self.get_logger().info(f"Line center: {cx}, Error: {error}")
 
-            # 🔥 Proportional (can be improved.)
+            # 🔥 Proportional (can be improved - PID)
             angular_z = -self.kp * error
 
             msg.linear.x = self.linear_speed
