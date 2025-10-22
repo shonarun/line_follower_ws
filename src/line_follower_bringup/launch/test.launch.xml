@@ -1,5 +1,5 @@
 <launch>
     <node pkg="line_follower" exec="line_follower_node">
-        <!-- <param from="$(find-pkg-share line_follower_bringup)/config/test.yaml" /> -->
+        <param from="$(find-pkg-share line_follower_bringup)/config/test.yaml" />
     </node>
 </launch>

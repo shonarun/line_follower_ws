@@ -1,4 +1,4 @@
-/line_follower_node: 
-ros__parameters:
-number: 7
-publish_period: 0.8
+/line_follower:
+  ros__parameters:
+    number: 18
+    publish_period: 0.9
