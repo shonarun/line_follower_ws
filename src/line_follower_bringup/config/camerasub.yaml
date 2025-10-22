@@ -1,0 +1,7 @@
+/camera_subscriber:
+  ros__parameters:
+    threshold_value: 50
+    cropping_ratio: 0.7
+    linear_speed: 0.2
+    kp: 0.01
+    max_angular: 0.1
