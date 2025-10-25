@@ -17,13 +17,13 @@
   direction: GZ_TO_ROS
 
 - ros_topic_name: "/camera/image_raw"
-  gz_topic_name: "/model/my_robot/sensor/camera_link/image"
+  gz_topic_name: "/camera"
   ros_type_name: "sensor_msgs/msg/Image"
   gz_type_name: "gz.msgs.Image"
   direction: GZ_TO_ROS
 
-- ros_topic_name: "/camera/depth_raw"
-  gz_topic_name: "/model/my_robot/sensor/camera_link/depth"
-  ros_type_name: "sensor_msgs/msg/Image"
-  gz_type_name: "gz.msgs.Image"
-  direction: GZ_TO_ROS
+# - ros_topic_name: "/camera/depth_raw"
+#   gz_topic_name: "/model/my_robot/sensor/camera_link/depth"
+#   ros_type_name: "sensor_msgs/msg/Image"
+#   gz_type_name: "gz.msgs.Image"
+#   direction: GZ_TO_ROS

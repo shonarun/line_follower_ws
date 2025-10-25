@@ -191,8 +191,8 @@
             <camera>
                 <horizontal_fov>1.047</horizontal_fov>
                 <image>
-                    <width>640</width>
-                    <height>480</height>
+                    <width>1980</width>
+                    <height>1080</height>
                     <format>R8G8B8</format>
                 </image>
                 <clip>
@@ -200,9 +200,9 @@
                     <far>100.0</far>
                 </clip>
             </camera>
-            <always_on>true</always_on>
+            <always_on>1</always_on>
             <visualize>true</visualize>
-            <topic>/camera/image_raw</topic>
+            <topic>/camera</topic>
         </sensor>
     </gazebo>
 

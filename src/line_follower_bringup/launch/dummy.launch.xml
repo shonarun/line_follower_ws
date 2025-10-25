@@ -16,5 +16,6 @@
         <param name="config_file"
             value="$(var gazebo_config_path)" />
     </node>
+    <node pkg="line_follower_controller" exec="line_follower_controller"></node>
 
 </launch>
