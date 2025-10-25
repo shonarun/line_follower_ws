@@ -1,9 +1,9 @@
 <launch>
-    <let name="urdf_path"
-        value="$(find-pkg-share line_follower_description)/urdf/dummy_bot.urdf.xacro" />
-    <let name="world" value="$(find-pkg-share line_follower_worlds)/worlds/grading_world.sdf" />
-    <let name="gazebo_config_path"
-        value="$(find-pkg-share line_follower_bringup)/config/gazebo_bridge.yaml" />
+
+    <let name="urdf_path" value="$(find-pkg-share line_follower_description)/urdf/dummy_bot.urdf.xacro" />
+    <let name="world" value="$(find-pkg-share line_follower_worlds)/worlds/sample.sdf" />
+    <let name="gazebo_config_path" value="$(find-pkg-share line_follower_bringup)/config/gazebo_bridge.yaml" />
+    <let name="controller_config" value="$(find-pkg-share line_follower_bringup)/config/controller.yaml"/>
 
     <node pkg="robot_state_publisher" exec="robot_state_publisher">
         <param name="robot_description" value="$(command 'xacro $(var urdf_path)')" />
@@ -16,14 +16,14 @@
         <param name="config_file"
             value="$(var gazebo_config_path)" />
     </node>
-    <node pkg="line_follower_controller" exec="line_follower_controller">
-        <param from="$(find-pkg-share line_follower_bringup)/config/camerasub.yaml"/>
-    </node>
-    <!-- <node pkg="line_follower_controller" exec="line_detector">
-        <param from="$(find-pkg-share line_follower_bringup)/config/camerasub.yaml"/>
+    <!-- <node pkg="line_follower_controller" exec="line_follower_controller">
+        <param from="$(var controller_config)"/>
+    </node> -->
+    <node pkg="line_follower_controller" exec="line_detector">
+        <param from="$(var controller_config)"/>
     </node>
     <node pkg="line_follower_controller" exec="line_follower">
-        <param from="$(find-pkg-share line_follower_bringup)/config/camerasub.yaml"/>
-    </node> -->
+        <param from="$(var controller_config)"/>
+    </node>
     <node pkg="line_follower" exec="line_follower_node" />
 </launch>

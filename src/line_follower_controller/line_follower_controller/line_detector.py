@@ -45,7 +45,6 @@ class LineDetector(Node):
             self.error_pub.publish(error_msg)
             self.get_logger().info(f"Line center: {cx}, Error: {error}")
         else:
-            self.get_logger().info("Line not found!")
             error_msg.data = float('nan')
             self.error_pub.publish(error_msg)
 

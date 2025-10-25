@@ -41,7 +41,7 @@
                 izz="${(2/5) * m * r * r}" />
         </inertial>
     </xacro:macro>
-    <xacro:property name="base_length" value="0.6" />
+    <xacro:property name="base_length" value="0.2" />
     <xacro:property name="base_width" value="0.4" />
     <xacro:property name="base_height" value="0.2" />
     <xacro:property name="wheel_radius" value="0.1" />
@@ -181,7 +181,7 @@
     <joint name="camera_joint" type="fixed">
         <parent link="base_link" />
         <child link="camera_link" />
-        <origin xyz="0.3 0 ${base_height}" rpy="0 0.35 0" />
+        <origin xyz="${base_length / 2.0} 0 ${base_height}" rpy="0 0.35 0" />
     </joint>
 
     <gazebo reference="camera_link">
@@ -229,7 +229,7 @@
     <joint name="camera_joint2" type="fixed">
         <parent link="base_link" />
         <child link="camera_link2" />
-        <origin xyz="0.3 0 ${base_height / 4.0}" rpy="0 0 0" />
+        <origin xyz="${base_length / 2.0} 0 ${base_height / 4.0}" rpy="0 0 0" />
     </joint>
 
     <gazebo reference="camera_link2">

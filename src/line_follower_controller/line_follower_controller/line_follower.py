@@ -27,7 +27,7 @@ class LineFollower(Node):
         self.integral = 0.0
         self.last_time = None
         self.line_lost_counter = 0
-        self.line_lost_max = 60
+        self.line_lost_max = 300
 
         self.subscription = self.create_subscription(Float64, '/line_error', self.error_callback, 10)
         self.cmd_pub = self.create_publisher(Twist, '/cmd_vel', 10)
@@ -54,15 +54,15 @@ class LineFollower(Node):
 
             if abs(angular_z) > self.max_angular:
                 cmd.linear.x = 0.0
-                cmd.angular.z = angular_z
+                cmd.angular.z = max(min(angular_z, self.max_angular), -self.max_angular)
         else:
             # Lost line — spin to search
             self.line_lost_counter += 1
             if self.line_lost_counter < self.line_lost_max:
                 self.get_logger().info("Line lost, searching...")
                 cmd.linear.x = 0.0
-                cmd.angular.z = 0.3
-            else:
+                cmd.angular.z = - 0.3 * self.integral / abs(self.integral)
+            elif self.line_lost_counter == self.line_lost_max:
                 self.get_logger().info("Line lost too long! Stopping.")
                 cmd = Twist()
 
