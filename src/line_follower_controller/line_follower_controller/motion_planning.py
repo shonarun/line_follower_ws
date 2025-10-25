@@ -10,37 +10,27 @@ import time
 class CameraSub(Node):
     def __init__(self):
         super().__init__('camera_subscriber')
-
-        self.threshold_value = 50
-        self.cropping_ratio = 0.8
-        self.linear_speed = 0.2
-        self.kp = 0.005
-        self.ki = 0.005
-        self.kd = 0.02
-        self.max_angular = 1.0
-
         self.last_error = 0.0
         self.integral = 0.0
         self.last_time = None
-        
-        # 🔥 Might wanna consider this instead..
-        """self.declare_parameter('threshold_value', 50)
-        self.threshold_value = self.get_parameter('threshold_value').value
-
+        self.declare_parameter('threshold_value', 50)
         self.declare_parameter('cropping_ratio', 0.7)
-        self.cropping_ratio = self.get_parameter('cropping_ratio').value
-
         self.declare_parameter('linear_speed', 0.2)
-        self.linear_speed = self.get_parameter('linear_speed').value
-
         self.declare_parameter('kp', 0.01)
-        self.kp = self.get_parameter('kp').value
-
+        self.declare_parameter('ki', 0.005)
+        self.declare_parameter('kd', 0.02)
         self.declare_parameter('max_angular', 1.0)
-        self.max_angular = self.get_parameter('max_angular').value"""
+        
+        self.threshold_value : int = self.get_parameter('threshold_value').value
+        self.cropping_ratio : float = self.get_parameter('cropping_ratio').value
+        self.linear_speed : float = self.get_parameter('linear_speed').value
+        self.kp : float = self.get_parameter('kp').value
+        self.ki : float = self.get_parameter('ki').value
+        self.kd : float = self.get_parameter('kd').value
+        self.max_angular : float = self.get_parameter('max_angular').value
 
         self.line_lost_counter = 0
-        self.line_lost_max = 10
+        self.line_lost_max = 60
 
         self.subscription = self.create_subscription(Image, '/camera/image_raw', self.listener_callback, 10)
         self.bridge = CvBridge()
@@ -97,24 +87,24 @@ class CameraSub(Node):
             self.last_time = current_time
 
             # Apply limits
-            angular_z = max(min(angular_z, self.max_angular), -self.max_angular)
+            # angular_z = max(min(angular_z, self.max_angular), -self.max_angular)
 
             msg.linear.x = self.linear_speed
             msg.angular.z = angular_z
             
             # 🔥 May try this (to turn in place)
-            if abs(angular_z) > self.max_angular and False:
+            if abs(angular_z) > self.max_angular:
                 msg.linear.x = 0.0
                 msg.angular.z = angular_z
 
         else:
             self.line_lost_counter += 1
-            if self.line_lost_counter < self.line_lost_max and False: # 🔥 May consider this.
-                self.get_logger().warn("Line lost, searching...")
+            if self.line_lost_counter < self.line_lost_max: # 🔥 May consider this.
+                self.get_logger().info("Line lost, searching...")
                 msg.linear.x = 0.0
                 msg.angular.z = 0.3  # spin to search
             else:
-                self.get_logger().error("Line lost for too long! Stopping.")
+                self.get_logger().info("Line lost for too long! Stopping.")
                 msg = Twist()  # stop
             
         self.cmd_publisher.publish(msg)

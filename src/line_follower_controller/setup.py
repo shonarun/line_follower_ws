@@ -24,7 +24,9 @@ setup(
     },
     entry_points={
         'console_scripts': [
-            "line_follower_controller = line_follower_controller.motion_planning:main"
+            "line_follower_controller = line_follower_controller.motion_planning:main",
+            "line_detector = line_follower_controller.line_detector:main", 
+            "line_follower = line_follower_controller.line_follower:main"
         ],
     },
 )

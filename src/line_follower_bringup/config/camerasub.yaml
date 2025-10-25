@@ -1,7 +1,22 @@
 /camera_subscriber:
   ros__parameters:
     threshold_value: 50
-    cropping_ratio: 0.7
-    linear_speed: 0.2
+    cropping_ratio: 0.8
+    linear_speed: 0.3
     kp: 0.01
-    max_angular: 0.1
+    ki: 0.0
+    kd: 0.0
+    max_angular: 0.2
+
+/line_detector:
+  ros__parameters:
+    threshold_value: 50
+    cropping_ratio: 0.8
+
+/line_follower:
+  ros__parameters:
+    linear_speed: 0.3
+    kp: 0.01
+    ki: 0.0
+    kd: 0.0
+    max_angular: 0.2

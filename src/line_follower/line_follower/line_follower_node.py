@@ -10,7 +10,7 @@ class LineFollowerNode(Node):
         self.declare_parameter("publish_period", 1.0)
         self.x = self.get_parameter("number").value
         self.y = self.get_parameter("publish_period").value
-        self.get_logger().error(f"{self.x} : {self.y}")
+        self.get_logger().info(f"{self.x} : {self.y}")
 
 def main(args=None):
     rclpy.init(args=args)
