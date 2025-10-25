@@ -1,5 +1,0 @@
-<launch>
-    <node pkg="line_follower_controller" exec="line_follower_controller">
-        <param from="$(find-pkg-share line_follower_bringup)/config/camerasub.yaml" />
-    </node>
-</launch>

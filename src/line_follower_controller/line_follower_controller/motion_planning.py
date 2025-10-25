@@ -5,17 +5,24 @@ from sensor_msgs.msg import Image
 from cv_bridge import CvBridge
 import cv2
 from geometry_msgs.msg import Twist
+import time
 
 class CameraSub(Node):
     def __init__(self):
         super().__init__('camera_subscriber')
 
         self.threshold_value = 50
-        self.cropping_ratio = 0.7
+        self.cropping_ratio = 0.8
         self.linear_speed = 0.2
-        self.kp = 0.01
+        self.kp = 0.005
+        self.ki = 0.005
+        self.kd = 0.02
         self.max_angular = 1.0
 
+        self.last_error = 0.0
+        self.integral = 0.0
+        self.last_time = None
+        
         # 🔥 Might wanna consider this instead..
         """self.declare_parameter('threshold_value', 50)
         self.threshold_value = self.get_parameter('threshold_value').value
@@ -64,6 +71,8 @@ class CameraSub(Node):
         M = cv2.moments(roi)
         msg = Twist()
 
+        current_time = time.time()
+
         if M["m00"] > 0:
             cx = int(M["m10"] / M["m00"])
             cy = int(M["m01"] / M["m00"]) + int(height*self.cropping_ratio)
@@ -74,12 +83,25 @@ class CameraSub(Node):
             error = cx - frame_center
             self.get_logger().info(f"Line center: {cx}, Error: {error}")
 
+            dt = current_time - self.last_time if self.last_time else 0.01
+            self.integral += error * dt
+            derivative = (error - self.last_error) / dt if dt > 0 else 0.0
+
+            angular_z = -(self.kp * error + self.ki * self.integral + self.kd * derivative)
+
             # 🔥 Proportional (can be improved - PID)
-            angular_z = -self.kp * error
+            # angular_z = -self.kp * error
+
+            # Save state for next loop
+            self.last_error = error
+            self.last_time = current_time
+
+            # Apply limits
+            angular_z = max(min(angular_z, self.max_angular), -self.max_angular)
 
             msg.linear.x = self.linear_speed
-            msg.angular.z = max(min(angular_z, self.max_angular), -self.max_angular)
-
+            msg.angular.z = angular_z
+            
             # 🔥 May try this (to turn in place)
             if abs(angular_z) > self.max_angular and False:
                 msg.linear.x = 0.0

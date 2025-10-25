@@ -1,8 +1,0 @@
-<launch>
-    <node name="gazebo" pkg="gazebo_ros" exec="gzserver" args="$(find-pkg-share line_follower_worlds)/worlds/empty.sdf" output="screen" />
-    <node name="gazebo_gui" pkg="gazebo_ros" exec="gzclient" output="screen" />
-    <node pkg="robot_state_publisher" exec="robot_state_publisher" name="robot_state_publisher" output="screen">
-        <param name="robot_description" value="$(command xacro $(find-pkg-share line_follower_description)/urdf/dummy_bot.urdf.xacro)" />
-    </node>
-    <node pkg="ros_gz_sim" exec="create" args="-topic robot_description -entity line_follower" output="screen" />
-</launch>
