@@ -25,5 +25,5 @@
     <node pkg="line_follower_controller" exec="line_follower">
         <param from="$(find-pkg-share line_follower_bringup)/config/camerasub.yaml"/>
     </node> -->
-
+    <node pkg="line_follower" exec="line_follower_node" />
 </launch>

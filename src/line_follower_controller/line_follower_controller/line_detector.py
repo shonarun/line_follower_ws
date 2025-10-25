@@ -23,7 +23,7 @@ class LineDetector(Node):
         try:
             frame = self.bridge.imgmsg_to_cv2(data, 'bgr8')
         except Exception as e:
-            self.get_logger().error(f"Image conversion failed: {e}")
+            self.get_logger().info(f"Image conversion failed: {e}")
             return
 
         gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
@@ -45,7 +45,7 @@ class LineDetector(Node):
             self.error_pub.publish(error_msg)
             self.get_logger().info(f"Line center: {cx}, Error: {error}")
         else:
-            self.get_logger().warn("Line not found!")
+            self.get_logger().info("Line not found!")
             error_msg.data = float('nan')
             self.error_pub.publish(error_msg)
 

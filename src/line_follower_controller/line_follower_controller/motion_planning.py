@@ -42,7 +42,7 @@ class CameraSub(Node):
             
         
         except Exception as e:
-            self.get_logger().error(f"Failed to convert image: {e}")
+            self.get_logger().info(f"Failed to convert image: {e}")
             return
     
         # Convert to grayscale and threshold
@@ -79,20 +79,14 @@ class CameraSub(Node):
 
             angular_z = -(self.kp * error + self.ki * self.integral + self.kd * derivative)
 
-            # 🔥 Proportional (can be improved - PID)
-            # angular_z = -self.kp * error
-
-            # Save state for next loop
             self.last_error = error
             self.last_time = current_time
-
-            # Apply limits
+            
             # angular_z = max(min(angular_z, self.max_angular), -self.max_angular)
 
             msg.linear.x = self.linear_speed
             msg.angular.z = angular_z
             
-            # 🔥 May try this (to turn in place)
             if abs(angular_z) > self.max_angular:
                 msg.linear.x = 0.0
                 msg.angular.z = angular_z
@@ -113,7 +107,7 @@ class CameraSub(Node):
             cv2.imshow("Processed", frame)
             cv2.waitKey(1)
         except Exception as e:
-            self.get_logger().warn(f"Display error: {e}")
+            self.get_logger().info(f"Display error: {e}")
 
     # No particular reason here.
     def destroy_node(self):

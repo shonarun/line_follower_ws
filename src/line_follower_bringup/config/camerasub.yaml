@@ -2,7 +2,7 @@
   ros__parameters:
     threshold_value: 50
     cropping_ratio: 0.8
-    linear_speed: 0.3
+    linear_speed: 0.20
     kp: 0.01
     ki: 0.0
     kd: 0.0
