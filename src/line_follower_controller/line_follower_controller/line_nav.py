@@ -6,17 +6,16 @@ from nav_msgs.msg import Odometry
 from tf2_ros import Buffer, TransformListener
 from tf2_ros import TransformException
 import numpy as np
-from collections import deque  # For efficient queue
-
+from collections import deque 
 class LineNavigator(Node):
     def __init__(self):
         super().__init__('line_navigator')
-        self.declare_parameter('max_linear_vel', 0.2)  # m/s forward speed
-        self.declare_parameter('k_p', 1.5)  # Proportional gain for angular steering
-        self.declare_parameter('queue_max_size', 10)  # Max points in queue (lookahead buffer)
-        self.declare_parameter('pop_distance', 0.3)  # Distance threshold to pop front point (m)
-        self.declare_parameter('min_point_dist', 0.2)  # Min distance between queued points to avoid duplicates
-        self.declare_parameter('lost_timeout', 2.0)  # Seconds without new points before "lost" mode
+        self.declare_parameter('max_linear_vel', 0.2)  
+        self.declare_parameter('k_p', 1.5) 
+        self.declare_parameter('queue_max_size', 10) 
+        self.declare_parameter('pop_distance', 0.3)
+        self.declare_parameter('min_point_dist', 0.2)
+        self.declare_parameter('lost_timeout', 2.0) 
 
         self.max_v = self.get_parameter('max_linear_vel').value
         self.k_p = self.get_parameter('k_p').value
@@ -25,10 +24,10 @@ class LineNavigator(Node):
         self.min_point_dist = self.get_parameter('min_point_dist').value
         self.lost_timeout = self.get_parameter('lost_timeout').value
 
-        # Queue: deque of (x, y, timestamp) in odom frame
+        
         self.point_queue = deque(maxlen=self.queue_max_size)
-        self.last_point_time = None  # For lost detection
-        self.robot_pose = np.array([0.0, 0.0, 0.0])  # [x, y, yaw] in odom
+        self.last_point_time = None 
+        self.robot_pose = np.array([0.0, 0.0, 0.0]) 
 
         self.point_sub = self.create_subscription(PointStamped, '/line_ground_point', self.point_callback, 10)
         self.odom_sub = self.create_subscription(Odometry, '/odom', self.odom_callback, 10)
@@ -52,17 +51,17 @@ class LineNavigator(Node):
             return
 
         current_time = self.get_clock().now()
-        self.last_point_time = current_time  # Reset lost timer
+        self.last_point_time = current_time  
 
         new_point = np.array([msg.point.x, msg.point.y])
         robot_pos = self.robot_pose[:2]
 
-        # Check if queue is empty or new point is sufficiently ahead (projected further along path)
+        
         if len(self.point_queue) == 0 or self._is_ahead(new_point, self.point_queue[-1], robot_pos):
             self.point_queue.append((msg.point.x, msg.point.y, current_time.nanoseconds))
             self.get_logger().info(f"Enqueued point: ({msg.point.x:.2f}, {msg.point.y:.2f}). Queue size: {len(self.point_queue)}")
 
-        # Clean up: Pop front if reached
+        
         self._update_queue()
 
     def _is_ahead(self, new_point, last_queued, robot_pos):
@@ -71,7 +70,6 @@ class LineNavigator(Node):
         robot_to_last = last_pt - robot_pos
         robot_to_new = new_point - robot_pos
 
-        # Project onto forward direction (robot yaw); if new is further, enqueue
         forward_dir = np.array([np.cos(self.robot_pose[2]), np.sin(self.robot_pose[2])])
         dist_last = np.dot(robot_to_last, forward_dir)
         dist_new = np.dot(robot_to_new, forward_dir)
@@ -94,7 +92,6 @@ class LineNavigator(Node):
         """Main control loop: Chase front of queue. Run via timer for steady updates."""
         current_time = self.get_clock().now()
         if self.last_point_time and (current_time - self.last_point_time).nanoseconds / 1e9 > self.lost_timeout:
-            # Lost line: Stop or straight
             twist = Twist()
             twist.linear.x = 0.0
             twist.angular.z = 0.0
@@ -103,32 +100,31 @@ class LineNavigator(Node):
             return
 
         if len(self.point_queue) == 0:
-            # No points: Straight ahead
             twist = Twist()
             twist.linear.x = self.max_v
             twist.angular.z = 0.0
             self.cmd_pub.publish(twist)
             return
 
-        # Target front point
+        
         target_x, target_y, _ = self.point_queue[0]
         target_pt = np.array([target_x, target_y])
         robot_pos = self.robot_pose[:2]
 
-        # Relative vector in robot frame (rotate by -yaw)
+        
         rel_vec = target_pt - robot_pos
         yaw = self.robot_pose[2]
         rel_x = np.cos(-yaw) * rel_vec[0] - np.sin(-yaw) * rel_vec[1]
         rel_y = np.sin(-yaw) * rel_vec[0] + np.cos(-yaw) * rel_vec[1]
 
-        # Lateral error (y in robot frame); longitudinal for speed scaling
+        
         lateral_error = rel_y
         long_dist = rel_x
 
-        # Proportional control
+        
         twist = Twist()
-        twist.linear.x = min(self.max_v, self.max_v * (long_dist / 1.0))  # Scale speed by distance to target
-        twist.angular.z = -self.k_p * np.tanh(lateral_error)  # Use tanh for saturation
+        twist.linear.x = min(self.max_v, self.max_v * (long_dist / 1.0)) 
+        twist.angular.z = -self.k_p * np.tanh(lateral_error)  
 
         self.cmd_pub.publish(twist)
         self.get_logger().debug(f"Chasing ({target_x:.2f}, {target_y:.2f}); lat_err: {lateral_error:.2f}, dist: {np.linalg.norm(rel_vec):.2f}")
@@ -136,8 +132,6 @@ class LineNavigator(Node):
 def main(args=None):
     rclpy.init(args=args)
     node = LineNavigator()
-
-    # Timer for steady control updates (e.g., 20Hz)
     timer = node.create_timer(0.05, node._publish_commands)
 
     rclpy.spin(node)

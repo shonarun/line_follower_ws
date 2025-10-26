@@ -17,7 +17,7 @@ class LineDetector(Node):
         super().__init__('line_detector')
         self.declare_parameter('threshold_value', 50)
         self.declare_parameter('cropping_ratio', 0.7)
-        self.declare_parameter('target_frame', 'odom')  # Frame for projection, e.g., 'odom' or 'map'
+        self.declare_parameter('target_frame', 'odom') 
 
         self.threshold_value = self.get_parameter('threshold_value').value
         self.cropping_ratio = self.get_parameter('cropping_ratio').value
@@ -29,11 +29,10 @@ class LineDetector(Node):
         self.camera_info_sub = self.create_subscription(
             CameraInfo, '/camera/camera_info', self.camera_info_callback, 10)
         
-        # Publishers
+        
         self.error_pub = self.create_publisher(Float64, '/line_error', 10)
         self.line_point_pub = self.create_publisher(PointStamped, '/line_ground_point', 10)
 
-        # TF setup
         self.tf_buffer = Buffer()
         self.tf_listener = TransformListener(self.tf_buffer, self)
         
@@ -67,12 +66,10 @@ class LineDetector(Node):
         if M['m00'] > 0:
             cx = int(M['m10'] / M['m00'])
             roi_cy = int(M['m01'] / M['m00'])
-            cy = roi_y_start + roi_cy  # Convert back to full image coordinates
+            cy = roi_y_start + roi_cy 
             
-            # Draw circle
             cv2.circle(frame, (cx, cy), 10, (0, 255, 0), -1)
             
-            # Original pixel error
             frame_center = width // 2
             error = float(cx - frame_center)
             error_msg.data = error
@@ -106,7 +103,6 @@ class LineDetector(Node):
             raise ValueError("Invalid camera intrinsics.")
         K = np.array(K_list).reshape(3, 3)
         
-        # Get transform: target_frame -> camera_optical_frame
         try:
             trans = self.tf_buffer.lookup_transform(
                 self.target_frame, self.camera_info.header.frame_id,
