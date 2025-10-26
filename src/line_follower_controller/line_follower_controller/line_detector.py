@@ -49,8 +49,8 @@ class LineDetector(Node):
             self.error_pub.publish(error_msg)
 
         try:
-            # cv2.imshow('Line Detection', frame)
-            # cv2.waitKey(1)
+            cv2.imshow('Line Detection', frame)
+            cv2.waitKey(1)
             pass
         except Exception:
             pass
