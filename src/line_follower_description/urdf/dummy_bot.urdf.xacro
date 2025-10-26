@@ -41,7 +41,7 @@
                 izz="${(2/5) * m * r * r}" />
         </inertial>
     </xacro:macro>
-    <xacro:property name="base_length" value="0.2" />
+    <xacro:property name="base_length" value="0.4" />
     <xacro:property name="base_width" value="0.4" />
     <xacro:property name="base_height" value="0.2" />
     <xacro:property name="wheel_radius" value="0.1" />
